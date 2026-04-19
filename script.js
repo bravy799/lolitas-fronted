@@ -1,115 +1,111 @@
-/**
- * LOLITA'S BOUTIQUE - THE COMPLETE MASTER ENGINE
- */
+const API_BASE = "https://lolitas-api.onrender.com";
 
-const API_BASE = "https://lolitas-api.onrender.com"; // Adjust to match your node server port if different
+// Dummy Items if Render is empty
+const dummyData = [
+  {
+    id: 101,
+    name: "Silk Gala Gown",
+    price: 8500,
+    category: "Dresses",
+    image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800",
+  },
+  {
+    id: 102,
+    name: "Midnight Oud",
+    price: 4500,
+    category: "Perfumes",
+    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800",
+  },
+  {
+    id: 103,
+    name: "Golden Aura Set",
+    price: 12000,
+    category: "Jewelry",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800",
+  },
+];
 
-// --- 1. GLOBAL UI UPDATES ---
-function updateCartCount() {
-  const badge = document.getElementById("cart-count");
-  if (!badge) return;
-  const cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
-  // Displays total quantity in the Bag ( ) header
-  badge.innerText = cart.reduce(
-    (sum, item) => sum + parseInt(item.quantity),
-    0,
-  );
-}
-
-// --- 2. SHOP PAGE PRODUCT LOADING ---
-async function loadShop() {
-  const gallery = document.getElementById("gallery-container");
-  if (!gallery) return;
-
+async function init() {
+  let products = [];
   try {
-    const res = await fetch(`${API_BASE}/api/products`);
-    const products = await res.json();
-
-    gallery.innerHTML = products
-      .map((p) => {
-        const productData = JSON.stringify(p).replace(/'/g, "&apos;");
-        return `
-                <div class="product-card">
-                    <img src="${p.img}" alt="${p.name}">
-                    <h4>${p.name}</h4>
-                    <p>$${parseFloat(p.price).toFixed(2)}</p>
-                    <button class="add-btn" onclick='initiateAddToBag(${productData})'>
-                        Add to Bag
-                    </button>
-                </div>`;
-      })
-      .join("");
+    const res = await fetch(`${API_BASE}/products`);
+    products = await res.json();
+    if (!products || products.length === 0) products = dummyData;
   } catch (e) {
-    console.error(
-      "Backend unreachable. Ensure your node server.js is running.",
-    );
+    products = dummyData; // Fallback to dummies if Render is sleeping
   }
+
+  if (document.getElementById("arrivals-grid"))
+    render(products.slice(0, 3), "arrivals-grid");
+  if (document.getElementById("shop-grid")) render(products, "shop-grid");
 }
 
-// --- 3. ADDING & QUANTITY PROMPT ---
-window.initiateAddToBag = function (product) {
-  let qty = prompt(`How many "${product.name}" would you like to add?`, "1");
-  if (qty === null || qty === "" || isNaN(qty) || parseInt(qty) < 1) return;
-
-  qty = parseInt(qty);
-  let cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
-  const existing = cart.find((item) => item.id === product.id);
-
-  if (existing) {
-    existing.quantity += qty;
-  } else {
-    cart.push({ ...product, quantity: qty });
-  }
-
-  localStorage.setItem("lolitasCart", JSON.stringify(cart));
-  alert(`Success! ${qty}x ${product.name} added to your bag.`);
-  updateCartCount();
-};
-
-// --- 4. CHECKOUT MANAGEMENT & REMOVAL ---
-function loadCheckout() {
-  const summary = document.getElementById("summary-items");
-  const totalDisplay = document.getElementById("total-amount");
-  if (!summary) return;
-
-  const cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
-  let grandTotal = 0;
-
-  if (cart.length === 0) {
-    summary.innerHTML = "<p>Your bag is empty.</p>";
-    totalDisplay.innerText = "$0.00";
-    return;
-  }
-
-  summary.innerHTML = cart
-    .map((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      grandTotal += itemTotal;
-      return `
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
-                <div>
-                    <strong>${item.name}</strong> (x${item.quantity})<br>
-                    <span>$${itemTotal.toFixed(2)}</span>
-                </div>
-                <button onclick="removeFromCart(${index})" style="color:red; cursor:pointer; background:none; border:none;">Remove</button>
-            </div>`;
-    })
+function render(items, targetId) {
+  const container = document.getElementById(targetId);
+  if (!container) return;
+  container.innerHTML = items
+    .map(
+      (p) => `
+        <div class="product-card">
+            <div class="img-container">
+                <span class="badge">Luxury</span>
+                <img src="${p.image}">
+            </div>
+            <div class="product-info">
+                <h3>${p.name}</h3>
+                <p>KSh ${Number(p.price).toLocaleString()}</p>
+                <button class="add-btn" onclick='addToBag(${JSON.stringify(p)})'>Add To Bag</button>
+            </div>
+        </div>
+    `,
+    )
     .join("");
-
-  totalDisplay.innerText = `$${grandTotal.toFixed(2)}`;
 }
 
-window.removeFromCart = function (index) {
-  let cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
-  cart.splice(index, 1);
-  localStorage.setItem("lolitasCart", JSON.stringify(cart));
-  loadCheckout();
-  updateCartCount();
-};
+async function filterCategory(cat) {
+  let products = [];
+  try {
+    const res = await fetch(`${API_BASE}/products`);
+    products = await res.json();
+    if (!products || products.length === 0) products = dummyData;
+  } catch (e) {
+    products = dummyData;
+  }
 
-// --- 5. INITIALIZATION ---
-document.addEventListener("DOMContentLoaded", () => {
-  updateCartCount();
-  loadShop();
-  loadCheckout();
-});
+  const filtered =
+    cat === "All" ? products : products.filter((p) => p.category === cat);
+  render(filtered, "shop-grid");
+
+  // Update active button UI
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.innerText === cat);
+  });
+}
+
+function addToBag(p) {
+  let cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
+  const exists = cart.find((item) => item.id === p.id);
+  if (exists) {
+    exists.quantity = (exists.quantity || 1) + 1;
+  } else {
+    p.quantity = 1;
+    cart.push(p);
+  }
+
+  localStorage.setItem("lolitasCart", JSON.stringify(cart));
+  updateUI();
+  alert(p.name + " added to bag!");
+}
+
+function updateUI() {
+  const cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
+  const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+  document
+    .querySelectorAll(".cart-count")
+    .forEach((el) => (el.innerText = count));
+}
+
+window.onload = () => {
+  init();
+  updateUI();
+};
