@@ -3,198 +3,285 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lolita's Boutique | Timeless Elegance</title>
+    <title>Lolita's | Luxury Boutique</title>
     <link rel="stylesheet" href="style.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      :root {
-        --accent: #d4a373;
-        --dark: #1a1a1a;
-        --soft: #f9f6f2;
-      }
-      body {
-        margin: 0;
-        font-family: "Inter", sans-serif;
-        color: var(--dark);
-        background: #fff;
-        line-height: 1.6;
-      }
-      nav {
-        padding: 30px 60px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: white;
-        border-bottom: 1px solid #f0f0f0;
-        position: sticky;
+      /* Modal Styles */
+      .auth-overlay {
+        display: none;
+        position: fixed;
         top: 0;
-        z-index: 1000;
-      }
-      nav h1 {
-        font-family: "Playfair Display";
-        font-size: 2rem;
-        letter-spacing: 3px;
-        margin: 0;
-        color: var(--accent);
-      }
-      .nav-links a {
-        text-decoration: none;
-        color: var(--dark);
-        margin-left: 40px;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-      }
-
-      .hero {
-        height: 60vh;
-        background: var(--soft);
-        display: flex;
-        flex-direction: column;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9999;
         justify-content: center;
         align-items: center;
+        backdrop-filter: blur(8px);
+      }
+      .auth-modal {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
         text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
       }
-      .hero h2 {
-        font-family: "Playfair Display";
-        font-size: 4.5rem;
-        margin: 0;
-        font-style: italic;
+      .auth-modal h2 {
+        font-family: "Playfair Display", serif;
+        margin-bottom: 10px;
       }
-
-      .about-section {
-        padding: 100px 60px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .about-img {
+      .auth-input {
         width: 100%;
-        height: 500px;
-        object-fit: cover;
-        border-radius: 2px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        box-sizing: border-box;
+        background: #f9f9f9;
       }
-
-      .section-title {
-        font-family: "Playfair Display";
-        font-size: 2.2rem;
-        margin: 60px 60px 30px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 15px;
-      }
-      .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 40px;
-        padding: 0 60px;
-        margin-bottom: 60px;
-      }
-      .product-card {
-        text-align: center;
-      }
-      .product-card img {
+      .auth-btn {
         width: 100%;
-        height: 450px;
-        object-fit: cover;
-        background: #f8f8f8;
+        padding: 18px;
+        background: #121212;
+        color: white;
+        border: none;
+        border-radius: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        letter-spacing: 2px;
+      }
+      .logout-btn {
+        font-size: 10px;
+        color: #ff4d4d;
+        cursor: pointer;
+        display: none;
+        margin-left: 15px;
+        text-transform: uppercase;
+      }
+      #user-welcome {
+        font-size: 12px;
+        color: #c5a059;
+        margin-right: 10px;
+        font-weight: 600;
       }
 
-      footer {
-        background: #fafafa;
-        padding: 60px;
-        border-top: 1px solid #eee;
-        margin-top: 80px;
-      }
-      .footer-grid {
+      /* RESTORED CLASSY CUSTOMER CARE STYLES */
+      .care-section {
+        background: #121212;
+        color: #fff;
+        padding: 80px 5%;
+        margin-top: 100px;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 40px;
-        max-width: 1200px;
-        margin: 0 auto;
+        text-align: center;
+      }
+      .care-item h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #c5a059;
+      }
+      .care-item p {
+        font-size: 13px;
+        color: #aaa;
+        line-height: 1.8;
+      }
+      .care-icon {
+        font-size: 30px;
+        margin-bottom: 20px;
+        display: block;
       }
     </style>
   </head>
   <body>
-    <nav>
-      <h1>LOLITA'S</h1>
-      <div class="nav-links">
-        <a href="index.html">Collection</a>
-        <a href="shop.html">Shop</a>
-        <a href="checkout.html">Bag (<span id="cart-count">0</span>)</a>
+    <div class="auth-overlay" id="authOverlay">
+      <div class="auth-modal">
+        <h2>Join the Circle</h2>
+        <p>
+          Lolita's is an exclusive boutique. Provide your details to unlock the
+          collection.
+        </p>
+        <form id="authForm">
+          <input
+            type="text"
+            id="regName"
+            class="auth-input"
+            placeholder="Full Name"
+            required
+          />
+          <input
+            type="email"
+            id="regEmail"
+            class="auth-input"
+            placeholder="Email Address"
+            required
+          />
+          <input
+            type="tel"
+            id="regPhone"
+            class="auth-input"
+            placeholder="Phone Number"
+            required
+          />
+          <button type="submit" class="auth-btn">START SHOPPING</button>
+        </form>
       </div>
-    </nav>
+    </div>
 
-    <header class="hero">
-      <p style="text-transform: uppercase; letter-spacing: 5px">Est. 2026</p>
-      <h2>Timeless Elegance</h2>
+    <header>
+      <a href="index.html" class="logo">LOLITA'S</a>
+      <nav class="nav-links">
+        <span id="user-welcome"></span>
+        <a href="index.html" style="color: #c5a059">Collection</a>
+        <a href="javascript:void(0)" onclick="checkAuth('shop.html')">Shop</a>
+        <a href="javascript:void(0)" onclick="checkAuth('orders.html')"
+          >My Orders</a
+        >
+        <a href="javascript:void(0)" onclick="checkAuth('checkout.html')"
+          >Bag (<span class="cart-count">0</span>)</a
+        >
+        <span id="logoutLink" class="logout-btn" onclick="logout()"
+          >Logout</span
+        >
+      </nav>
     </header>
 
-    <section class="about-section">
-      <img
-        src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000"
-        class="about-img"
-        alt="Luxury Fashion"
-      />
-      <div>
-        <h3
-          style="
-            font-family: &quot;Playfair Display&quot;;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-          "
-        >
-          Our Story
-        </h3>
-        <p style="font-style: italic; color: #666; font-size: 1.1rem">
-          "Lolita's Boutique is a haven for refined taste. We believe in the
-          power of fine craftsmanship and the quiet confidence of a perfectly
-          curated wardrobe."
+    <section class="hero">
+      <h1>ELEGANCE DEFINED</h1>
+    </section>
+
+    <div class="container">
+      <h2 class="section-title">FEATURED PIECES</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="img-container">
+            <span class="badge">LUXURY</span>
+            <img src="images/dress1.jpg" alt="Silk Gala Gown" />
+          </div>
+          <div class="product-info">
+            <h3>SILK GALA GOWN</h3>
+            <p>KSh 8,500</p>
+            <button
+              class="add-btn"
+              onclick="
+                protectedAddToBag({
+                  id: 1,
+                  name: 'Silk Gala Gown',
+                  price: 8500,
+                  image: 'images/dress1.jpg',
+                })
+              "
+            >
+              ADD TO BAG
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="care-section">
+      <div class="care-item">
+        <span class="care-icon">✦</span>
+        <h3>Personal Styling</h3>
+        <p>
+          Our experts are available via WhatsApp to help you choose the perfect
+          fit for your next gala.
+        </p>
+      </div>
+      <div class="care-item">
+        <span class="care-icon">⚡</span>
+        <h3>Priority Delivery</h3>
+        <p>
+          Exclusive 24-hour delivery within Nairobi and 48-hour delivery across
+          Kenya.
+        </p>
+      </div>
+      <div class="care-item">
+        <span class="care-icon">🔒</span>
+        <h3>Secure Checkout</h3>
+        <p>
+          Your data and payments are encrypted with world-class security
+          protocols via Paystack.
         </p>
       </div>
     </section>
 
-    <h3 class="section-title">New Arrival Dresses</h3>
-    <div id="dresses-arrival" class="product-grid"></div>
-
-    <h3 class="section-title">New Arrival Perfumes</h3>
-    <div id="perfumes-arrival" class="product-grid"></div>
-
-    <h3 class="section-title">New Arrival Jewelry</h3>
-    <div id="jewelry-arrival" class="product-grid"></div>
-
-    <footer>
-      <div class="footer-grid">
-        <div class="footer-col">
-          <h5 style="font-family: &quot;Playfair Display&quot;">
-            Lolita's Boutique
-          </h5>
-          <p>
-            Exquisite fashion for the modern individual. Quality and elegance at
-            the heart of everything we do.
-          </p>
-        </div>
-        <div class="footer-col">
-          <h5 style="font-family: &quot;Playfair Display&quot;">
-            Customer Care
-          </h5>
-          <p>Email: care@lolitas.com</p>
-          <p>WhatsApp: +234 800 LOLITA</p>
-        </div>
-        <div class="footer-col">
-          <h5 style="font-family: &quot;Playfair Display&quot;">
-            Shipping & Returns
-          </h5>
-          <p>Global Shipping</p>
-          <p>Shipping Policy</p>
-        </div>
+    <footer
+      style="
+        background: #000;
+        color: #fff;
+        padding: 40px 5%;
+        text-align: center;
+        font-family: &quot;Inter&quot;, sans-serif;
+      "
+    >
+      <div style="font-size: 11px; color: #666; letter-spacing: 2px">
+        © 2026 LOLITA'S KENYA. ALL RIGHTS RESERVED.
       </div>
     </footer>
+
     <script src="script.js"></script>
+    <script>
+      // Authentication scripts remain the same as previous response
+      const authOverlay = document.getElementById("authOverlay");
+      const authForm = document.getElementById("authForm");
+      const logoutLink = document.getElementById("logoutLink");
+      const userWelcome = document.getElementById("user-welcome");
+
+      function checkAuth(redirectUrl) {
+        const user = localStorage.getItem("lolitasUser");
+        if (!user) {
+          sessionStorage.setItem("redirectAfterAuth", redirectUrl);
+          authOverlay.style.display = "flex";
+        } else {
+          window.location.href = redirectUrl;
+        }
+      }
+
+      function protectedAddToBag(product) {
+        const user = localStorage.getItem("lolitasUser");
+        if (!user) {
+          authOverlay.style.display = "flex";
+        } else {
+          addToBag(product);
+        }
+      }
+
+      authForm.onsubmit = (e) => {
+        e.preventDefault();
+        const userData = {
+          name: document.getElementById("regName").value,
+          email: document.getElementById("regEmail").value,
+          phone: document.getElementById("regPhone").value,
+        };
+        localStorage.setItem("lolitasUser", JSON.stringify(userData));
+        const dest = sessionStorage.getItem("redirectAfterAuth");
+        if (dest) {
+          sessionStorage.removeItem("redirectAfterAuth");
+          window.location.href = dest;
+        } else {
+          location.reload();
+        }
+      };
+
+      function logout() {
+        localStorage.removeItem("lolitasUser");
+        location.reload();
+      }
+
+      window.onload = () => {
+        const userJson = localStorage.getItem("lolitasUser");
+        if (userJson) {
+          const user = JSON.parse(userJson);
+          logoutLink.style.display = "inline-block";
+          userWelcome.innerText = `Welcome, ${user.name.split(" ")[0]}`;
+        }
+      };
+    </script>
   </body>
 </html>
+
