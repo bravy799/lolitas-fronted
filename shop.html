@@ -4,91 +4,308 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shop | Lolita's Boutique</title>
-    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      nav {
-        padding: 30px 60px;
+      :root {
+        --primary: #00ca99; /* Mint accent from your reference */
+        --bg: #f4f7f6;
+        --text-dark: #1a1d1f;
+        --text-grey: #6f767e;
+        --card: #ffffff;
+        --border: #efefef;
+        --white: #ffffff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      /* --- NAVIGATION --- */
+      header {
+        background: var(--white);
+        padding: 20px 5%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+      .logo {
+        font-weight: 800;
+        font-size: 24px;
+        color: var(--text-dark);
+        text-decoration: none;
+        letter-spacing: -1px;
+      }
+      .logo span {
+        color: var(--primary);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
       }
       .nav-links a {
         text-decoration: none;
-        color: black;
-        margin-left: 30px;
-        font-size: 0.8rem;
-        text-transform: uppercase;
+        color: var(--text-grey);
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.2s;
       }
-      .filter-bar {
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--primary);
+      }
+
+      /* --- SHOP LAYOUT --- */
+      .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+
+      .filter-nav {
         display: flex;
         justify-content: center;
-        gap: 15px;
-        margin: 40px 0;
+        gap: 12px;
+        margin-bottom: 50px;
       }
       .filter-btn {
-        padding: 8px 25px;
-        border: 1px solid #000;
-        background: none;
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
         cursor: pointer;
-        text-transform: uppercase;
-        font-size: 0.7rem;
+        transition: 0.3s;
+        color: var(--text-grey);
       }
+      .filter-btn.active {
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0, 202, 153, 0.2);
+      }
+
+      .section-title {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      /* --- PRODUCT GRID --- */
       .product-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 40px;
-        padding: 0 60px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
       }
       .product-card {
-        text-align: center;
-        padding: 15px;
-        border: 1px solid #f9f9f9;
+        background: var(--white);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        transition: 0.3s;
       }
-      .product-card img {
+      .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+      }
+
+      .img-container {
+        height: 320px;
+        background: #f9f9f9;
+        position: relative;
+        overflow: hidden;
+      }
+      .img-container img {
         width: 100%;
-        height: 380px;
+        height: 100%;
         object-fit: cover;
       }
+      .badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: var(--primary);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .product-info {
+        padding: 20px;
+      }
+      .product-info h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      .product-info p {
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+
       .add-btn {
         width: 100%;
-        padding: 15px;
-        background: black;
+        background: var(--text-dark);
         color: white;
         border: none;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 700;
         cursor: pointer;
-        font-size: 0.75rem;
-        letter-spacing: 2px;
-        margin-top: 15px;
+        transition: 0.2s;
+      }
+      .add-btn:hover {
+        background: var(--primary);
+      }
+
+      footer {
+        background: var(--white);
+        border-top: 1px solid var(--border);
+        padding: 60px 5%;
+        margin-top: 100px;
+        text-align: center;
       }
     </style>
+    <script>
+      // AUTH GUARD
+      (function () {
+        const user = localStorage.getItem("lolitasUser");
+        if (!user) {
+          alert("Please login to access the boutique.");
+          window.location.href = "index.html";
+        }
+      })();
+    </script>
   </head>
   <body>
-    <nav>
-      <h1
-        style="
-          font-family: &quot;Playfair Display&quot;;
-          color: #d4a373;
-          margin: 0;
-        "
-      >
-        LOLITA'S
-      </h1>
-      <div class="nav-links">
+    <header>
+      <a href="index.html" class="logo">LOLITA<span>.</span></a>
+      <nav class="nav-links">
         <a href="index.html">Collection</a>
-        <a href="shop.html">Shop</a>
-        <a href="checkout.html">Bag (<span id="cart-count">0</span>)</a>
-      </div>
-    </nav>
+        <a href="shop.html" class="active">Shop</a>
+        <a href="orders.html">Orders</a>
+        <a href="checkout.html">Bag (<span class="cart-count">0</span>)</a>
+      </nav>
+    </header>
 
-    <div class="filter-bar">
-      <button class="filter-btn">Dresses</button>
-      <button class="filter-btn">Perfumes</button>
-      <button class="filter-btn">Jewelry</button>
+    <div class="container">
+      <div class="filter-nav">
+        <button class="filter-btn active" onclick="filterCategory('All', this)">
+          All
+        </button>
+        <button class="filter-btn" onclick="filterCategory('Dresses', this)">
+          Dresses
+        </button>
+        <button class="filter-btn" onclick="filterCategory('Perfumes', this)">
+          Perfumes
+        </button>
+        <button class="filter-btn" onclick="filterCategory('Jewelry', this)">
+          Jewelry
+        </button>
+      </div>
+
+      <h2 class="section-title" id="page-title">New Arrivals</h2>
+      <div class="product-grid" id="shop-grid"></div>
     </div>
 
-    <div id="gallery-container" class="product-grid"></div>
+    <footer>
+      <p style="color: var(--text-grey); font-size: 14px">
+        &copy; 2026 LOLITA BOUTIQUE. Tech-Luxe Edition.
+      </p>
+    </footer>
 
     <script src="script.js"></script>
+    <script>
+      // DUMMY DATA (Fallback)
+      const dummyData = [
+        {
+          id: 1,
+          name: "Aura Silk Gown",
+          price: 8500,
+          category: "Dresses",
+          image: "images/dress1.jpg",
+        },
+        {
+          id: 2,
+          name: "Noir Essence",
+          price: 4500,
+          category: "Perfumes",
+          image: "images/perfume1.jpg",
+        },
+      ];
+
+      function filterCategory(cat, btnEl) {
+        // Update Active Button UI
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        if (btnEl) btnEl.classList.add("active");
+
+        document.getElementById("page-title").innerText =
+          cat === "All" ? "New Arrivals" : cat;
+
+        // 1. PULL LIVE PRODUCTS FROM ADMIN STORAGE
+        const adminItems =
+          JSON.parse(localStorage.getItem("lolitasProducts")) || [];
+
+        // 2. COMBINE OR FALLBACK
+        const source = adminItems.length > 0 ? adminItems : dummyData;
+
+        // 3. FILTER
+        const filtered =
+          cat === "All" ? source : source.filter((p) => p.category === cat);
+
+        // 4. RENDER
+        const grid = document.getElementById("shop-grid");
+        if (filtered.length === 0) {
+          grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-grey);">No items found in ${cat}.</p>`;
+          return;
+        }
+
+        grid.innerHTML = filtered
+          .map(
+            (p) => `
+                <div class="product-card">
+                    <div class="img-container">
+                        <span class="badge">New</span>
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p>KSh ${Number(p.price).toLocaleString()}</p>
+                        <button class="add-btn" onclick='addToBag(${JSON.stringify(p)})'>ADD TO BAG</button>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Initialize on load
+      window.onload = () => {
+        if (typeof updateUI === "function") updateUI();
+        filterCategory("All");
+      };
+    </script>
   </body>
 </html>
