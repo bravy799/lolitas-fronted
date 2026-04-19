@@ -2,7 +2,7 @@
  * LOLITA'S BOUTIQUE - THE COMPLETE MASTER ENGINE
  */
 
-const API_BASE = "http://localhost:3000"; // Adjust to match your node server port if different
+const API_BASE = "https://lolitas-api.onrender.com"; // Adjust to match your node server port if different
 
 // --- 1. GLOBAL UI UPDATES ---
 function updateCartCount() {
