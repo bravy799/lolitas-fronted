@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Successful | Lolita's Shop</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .success-container {
+        text-align: center;
+        padding: 50px;
+        margin-top: 50px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      .checkmark {
+        font-size: 100px;
+        color: #d4a373;
+      }
+      .order-id {
+        font-weight: bold;
+        color: #333;
+        background: #f8ecea;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="success-container">
+        <div class="checkmark">✔</div>
+        <h1>Payment Successful!</h1>
+        <p>Thank you for your purchase. Your order is being processed.</p>
+        <p>
+          Your Tracking ID is:
+          <span class="order-id" id="tracking-number">Loading...</span>
+        </p>
+        <br />
+        <a
+          href="index.html"
+          class="buy-btn"
+          style="text-decoration: none; display: inline-block"
+          >Back to Home</a
+        >
+      </div>
+    </div>
+
+    <script>
+      // Extract the reference from the URL sent by Paystack
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get("reference") || urlParams.get("trxref");
+
+      if (reference) {
+        document.getElementById("tracking-number").innerText = reference;
+      } else {
+        // Fallback tracking number if reference is missing
+        document.getElementById("tracking-number").innerText =
+          "LS-" + Math.floor(Math.random() * 100000);
+      }
+
+      // Clear the cart so the customer starts fresh
+      localStorage.removeItem("lolitasCart");
+    </script>
+  </body>
+</html>
