@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders | Lolita's Boutique</title>
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      // GLOBAL PROTECTION GUARD
+      (function () {
+        const user = localStorage.getItem("lolitasUser");
+        if (!user) {
+          alert(
+            "Please login or signup on the home page to access your order history.",
+          );
+          window.location.href = "index.html";
+        }
+      })();
+    </script>
+    <style>
+      body {
+        background-color: #f4f7f9;
+        font-family: "Inter", sans-serif;
+        color: #333;
+        margin: 0;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px 20px;
+      }
+
+      /* Static/Sticky Navigation Header */
+      .nav-header {
+        position: sticky;
+        top: 0;
+        background: #f4f7f9;
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-between; /* Adjusted to show user info */
+        align-items: center;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
+
+      .back-link {
+        text-decoration: none;
+        color: #121212;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+      }
+      .back-link:hover {
+        opacity: 0.7;
+      }
+
+      .user-badge {
+        font-size: 12px;
+        color: #666;
+        background: #fff;
+        padding: 5px 15px;
+        border-radius: 20px;
+        border: 1px solid #eee;
+      }
+
+      .orders-header {
+        text-align: center;
+        margin: 20px 0 40px;
+      }
+      .orders-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 32px;
+      }
+
+      .order-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        border: 1px solid #eef1f5;
+        overflow: hidden;
+      }
+
+      .order-top-bar {
+        background: #fafbfc;
+        padding: 20px 30px;
+        border-bottom: 1px solid #eef1f5;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 20px;
+      }
+
+      .label {
+        color: #888;
+        text-transform: uppercase;
+        font-size: 10px;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .val {
+        font-weight: 600;
+        color: #121212;
+        font-size: 14px;
+      }
+
+      .order-number-badge {
+        background: #121212;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-right: 8px;
+      }
+
+      .product-list {
+        padding: 20px 30px;
+      }
+      .product-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 15px 0;
+        border-bottom: 1px solid #f4f4f4;
+      }
+      .product-row:last-child {
+        border: none;
+      }
+      .product-row img {
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .order-actions {
+        padding: 20px 30px;
+        background: #fafbfc;
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .btn-link {
+        text-decoration: none;
+        border: 1.5px solid #ddd;
+        background: white;
+        color: #333;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-size: 12px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+      .btn-link:hover {
+        border-color: #000;
+        background: #f4f4f4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav-header">
+        <a href="shop.html" class="back-link">← Back to Shop</a>
+        <div id="user-display" class="user-badge">Loading account...</div>
+      </div>
+
+      <div class="orders-header">
+        <h1>Your Order History</h1>
+      </div>
+      <div id="orders-list-container"></div>
+    </div>
+
+    <script>
+      function loadOrderHistory() {
+        const user = JSON.parse(localStorage.getItem("lolitasUser"));
+        if (user) {
+          document.getElementById("user-display").innerText =
+            `Logged in as: ${user.name}`;
+        }
+
+        const history =
+          JSON.parse(localStorage.getItem("lolitasOrderHistory")) || [];
+        const container = document.getElementById("orders-list-container");
+
+        if (history.length === 0) {
+          container.innerHTML = `
+            <div style="text-align:center; padding: 40px 0;">
+                <p style="color:#888; margin-bottom: 20px;">No orders found for this account.</p>
+                <a href="shop.html" class="btn-link" style="display:inline-block;">Continue Shopping</a>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = history
+          .slice()
+          .reverse()
+          .map((order, index) => {
+            const phone = "254770596377";
+            const orderNum = history.length - index;
+
+            const itemsDetails = order.items
+              .map((item, i) => {
+                const fullImageUrl = item.image.startsWith("http")
+                  ? item.image
+                  : `${window.location.origin}/${item.image}`;
+                return `   Item ${i + 1}: ${item.name}\n   Preview: ${fullImageUrl}`;
+              })
+              .join("\n\n");
+
+            const message = `Hello Lolita's Support,\n\nI need help with *Order #${orderNum}*\n\n*Customer Name:* ${user ? user.name : "Unknown"}\n*Reference ID:* ${order.ref}\n*Date:* ${order.date}\n\n*Items:*\n${itemsDetails}`;
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+            return `
+                <div class="order-card">
+                    <div class="order-top-bar">
+                        <div>
+                            <span class="label">Identity</span>
+                            <span class="val"><span class="order-number-badge">Order #${orderNum}</span></span>
+                        </div>
+                        <div><span class="label">Date</span><span class="val">${order.date}</span></div>
+                        <div><span class="label">Total Paid</span><span class="val">KSh ${order.total.toLocaleString()}</span></div>
+                        <div><span class="label">Reference</span><span class="val" style="font-family:monospace;">${order.ref}</span></div>
+                    </div>
+                    <div class="product-list">
+                        ${order.items
+                          .map(
+                            (item) => `
+                            <div class="product-row">
+                                <img src="${item.image}">
+                                <div class="product-info">
+                                    <h4 style="margin:0; font-size:14px; text-transform:uppercase;">${item.name}</h4>
+                                    <p style="margin:0; color:#c5a059; font-weight:bold;">KSh ${item.price.toLocaleString()} × ${item.quantity || 1}</p>
+                                </div>
+                            </div>`,
+                          )
+                          .join("")}
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn-link" onclick="window.print()">View Invoice</button>
+                        <a href="${whatsappUrl}" target="_blank" class="btn-link">Support</a>
+                    </div>
+                </div>`;
+          })
+          .join("");
+      }
+
+      window.onload = loadOrderHistory;
+    </script>
+  </body>
+</html>
