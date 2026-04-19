@@ -3,64 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Order Successful | Lolita's Shop</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Order Success | Lolita's Boutique</title>
     <style>
-      .success-container {
-        text-align: center;
+      body {
+        font-family: "Inter", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background: #f4f7f9;
+      }
+      .card {
+        background: white;
         padding: 50px;
-        margin-top: 50px;
-        background: #fff;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        max-width: 450px;
+      }
+      .check-icon {
+        width: 80px;
+        height: 80px;
+        background: #121212;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 20px;
+      }
+      .ref-box {
+        background: #f9f9f9;
+        padding: 15px;
         border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-family: monospace;
+        border: 1px dashed #ccc;
+        margin: 20px 0;
+        font-size: 14px;
       }
-      .checkmark {
-        font-size: 100px;
-        color: #d4a373;
-      }
-      .order-id {
+      .btn {
+        display: inline-block;
+        background: #121212;
+        color: white;
+        padding: 15px 35px;
+        text-decoration: none;
+        border-radius: 35px;
         font-weight: bold;
-        color: #333;
-        background: #f8ecea;
-        padding: 10px;
+        transition: 0.3s;
+        font-size: 14px;
+      }
+      .btn:hover {
+        opacity: 0.8;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="success-container">
-        <div class="checkmark">✔</div>
-        <h1>Payment Successful!</h1>
-        <p>Thank you for your purchase. Your order is being processed.</p>
-        <p>
-          Your Tracking ID is:
-          <span class="order-id" id="tracking-number">Loading...</span>
-        </p>
-        <br />
-        <a
-          href="index.html"
-          class="buy-btn"
-          style="text-decoration: none; display: inline-block"
-          >Back to Home</a
-        >
-      </div>
+    <div class="card">
+      <div class="check-icon">✓</div>
+      <h1>Payment Received</h1>
+      <p>
+        Thank you for shopping with Lolita's. Your order is being processed.
+      </p>
+      <div class="ref-box" id="display-ref">Verifying reference...</div>
+      <a href="orders.html" class="btn">View My Orders</a>
     </div>
 
     <script>
-      // Extract the reference from the URL sent by Paystack
-      const urlParams = new URLSearchParams(window.location.search);
-      const reference = urlParams.get("reference") || urlParams.get("trxref");
+      window.onload = function () {
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get("ref"); // Captures reference from Paystack
 
-      if (reference) {
-        document.getElementById("tracking-number").innerText = reference;
-      } else {
-        // Fallback tracking number if reference is missing
-        document.getElementById("tracking-number").innerText =
-          "LS-" + Math.floor(Math.random() * 100000);
-      }
+        // 1. Get the items currently in the cart
+        const cart = JSON.parse(localStorage.getItem("lolitasCart")) || [];
 
-      // Clear the cart so the customer starts fresh
-      localStorage.removeItem("lolitasCart");
+        if (ref && cart.length > 0) {
+          // 2. Load existing order history
+          let history =
+            JSON.parse(localStorage.getItem("lolitasOrderHistory")) || [];
+
+          // 3. Create the new order object using the structure your Orders page expects
+          const newOrder = {
+            ref: ref,
+            date: new Date().toLocaleString(),
+            total:
+              cart.reduce(
+                (sum, item) => sum + item.price * (item.quantity || 1),
+                0,
+              ) + 500,
+            items: cart,
+          };
+
+          // 4. Save to permanent history
+          history.push(newOrder);
+          localStorage.setItem("lolitasOrderHistory", JSON.stringify(history));
+
+          // 5. Clear the shopping cart so it's empty for the next visit
+          localStorage.removeItem("lolitasCart");
+
+          document.getElementById("display-ref").innerText =
+            "Reference: " + ref;
+        } else if (!ref) {
+          // Safety: If someone lands here without paying, send them home
+          window.location.href = "index.html";
+        }
+      };
     </script>
   </body>
 </html>
+
